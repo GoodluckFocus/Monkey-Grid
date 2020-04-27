@@ -60,9 +60,53 @@ class MESH_OT_monkey_grid(bpy.types.Operator):
                 size = self.size,
                 location = (x,y,1))
         return {'FINISHED'}
-    
+
+ 
+
+class VIEW3D_PT_monkey_grid(bpy.types.Panel):
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = 'Monkeys'
+    bl_label = 'Grid'
+
+    def draw(self,context):
+        col = self.layout.column(align=True)
+        col.operator('mesh.monkey_grid', 
+            text='Default Grid',
+            icon='MONKEY')
+        
+        props = col.operator('mesh.monkey_grid',
+            text='Big Grid',
+            icon ='MONKEY')
+        props.count_x=10
+        props.count_y=10
+        props.size=0.6
+
+        props = col.operator('mesh.monkey_grid',
+            text='Small Grid',
+            icon ='MONKEY')
+        props.count_x=1
+        props.count_y=1
+
+        col = self.layout.column(align=True)
+        col.prop(context.scene.cycles, 'preview_samples', text='Samples')
+        if context.active_object is None:
+            col.label(text='NO ACTIVE OBJECT')
+        else:
+            col.prop(context.active_object, 'hide_viewport')
+
+
+def menu_add_draw(self, context):
+    self.layout.operator('mesh.monkey_grid', icon='MONKEY')
+
+
+
 def register():
     bpy.utils.register_class(MESH_OT_monkey_grid)
+    bpy.utils.register_class(VIEW3D_PT_monkey_grid)
+    bpy.types.VIEW3D_MT_mesh_add.append(menu_add_draw)
 
 def unregister():
     bpy.utils.unregister_class(MESH_OT_monkey_grid)
+    bpy.utils.unregister_class(VIEW3D_PT_monkey_grid)
+    bpy.types.VIEW3D_MT_mesh_add.remove(menu_add_draw)
